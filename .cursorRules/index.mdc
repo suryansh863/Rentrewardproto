@@ -1,0 +1,94 @@
+---
+alwaysApply: true
+---
+
+# RentRewards Project Reference
+
+This file serves as a reference to important project documentation. Always refer to these documents when working on the RentRewards prototype.
+
+## Project Documentation
+
+All project documentation is stored in the `projectDoc` directory:
+
+- [MVP1 Requirements](../projectDoc/requirements/mvp1_requirements.md): Core requirements and features for the MVP1 prototype
+- [Architecture](../projectDoc/requirements/architecture.md): Project structure and component architecture
+- [Mock Data Structure](../projectDoc/requirements/mock_data_structure.md): Structure of the mock data used in the prototype
+- [UI Design Guidelines](../projectDoc/requirements/ui_design_guidelines.md): Design system, components, and layout guidelines
+
+## Project Overview
+
+RentRewards is a front-end-only prototype built with React + Vite that simulates a platform for:
+- Tenants to submit rent payments and earn reward points
+- Property owners to track rent records and referrals
+
+The prototype uses mock data only with no backend integration.
+
+## Key Principles
+
+1. Mobile-first approach for the Tenant app
+2. Desktop-first approach for the Owner app
+3. Clean, modern UI following the design guidelines
+4. Realistic user flows with mock data
+5. Proper state management using React hooks and Zustand
+
+## Development Guidelines
+
+1. Follow the project structure defined in the architecture document
+2. Use the mock data structure for all data needs
+3. Adhere to the UI design guidelines for consistent styling
+4. Implement the user flows as described in the requirements
+5. Ensure responsive design for both tenant and owner interfaces
+6. **Always use Yarn instead of npm** for package management:
+   - Use `yarn add` instead of `npm install`
+   - Use `yarn` instead of `npm install`
+   - Use `yarn dev` instead of `npm run dev`
+   - Use `yarn build` instead of `npm run build`
+
+## Getting Help
+
+If you need help understanding any aspect of the project, refer to the documentation in the `projectDoc` directory first.
+# RentRewards Project Reference
+
+This file serves as a reference to important project documentation. Always refer to these documents when working on the RentRewards prototype.
+
+## Project Documentation
+
+All project documentation is stored in the `projectDoc` directory:
+
+- [MVP1 Requirements](../projectDoc/requirements/mvp1_requirements.md): Core requirements and features for the MVP1 prototype
+- [Architecture](../projectDoc/requirements/architecture.md): Project structure and component architecture
+- [Mock Data Structure](../projectDoc/requirements/mock_data_structure.md): Structure of the mock data used in the prototype
+- [UI Design Guidelines](../projectDoc/requirements/ui_design_guidelines.md): Design system, components, and layout guidelines
+
+## Project Overview
+
+RentRewards is a front-end-only prototype built with React + Vite that simulates a platform for:
+- Tenants to submit rent payments and earn reward points
+- Property owners to track rent records and referrals
+
+The prototype uses mock data only with no backend integration.
+
+## Key Principles
+
+1. Mobile-first approach for the Tenant app
+2. Desktop-first approach for the Owner app
+3. Clean, modern UI following the design guidelines
+4. Realistic user flows with mock data
+5. Proper state management using React hooks and Zustand
+
+## Development Guidelines
+
+1. Follow the project structure defined in the architecture document
+2. Use the mock data structure for all data needs
+3. Adhere to the UI design guidelines for consistent styling
+4. Implement the user flows as described in the requirements
+5. Ensure responsive design for both tenant and owner interfaces
+6. **Always use Yarn instead of npm** for package management:
+   - Use `yarn add` instead of `npm install`
+   - Use `yarn` instead of `npm install`
+   - Use `yarn dev` instead of `npm run dev`
+   - Use `yarn build` instead of `npm run build`
+
+## Getting Help
+
+If you need help understanding any aspect of the project, refer to the documentation in the `projectDoc` directory first.
