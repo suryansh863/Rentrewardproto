@@ -19,7 +19,7 @@ const PaymentConfirmationModal = ({
   rentRecord,
   propertyName
 }: PaymentConfirmationModalProps) => {
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false); //okkk
 
   if (!isOpen) return null;
 
