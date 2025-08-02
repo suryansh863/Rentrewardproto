@@ -77,10 +77,17 @@ export const OwnerDataProvider = ({ children }: OwnerDataProviderProps) => {
   const acknowledgeRent = (tenantId: string, rentId: string) => {
     // Find tenant and rent record
     const tenant = tenants.find(t => t.id === tenantId);
-    const rent = tenant?.rentHistory.find(r => r.id === rentId);
-    
-    if (!tenant || !rent) return;
+    if (!tenant) {
+      console.error(`Tenant with ID ${tenantId} not found`);
+      return;
+    }
 
+    const rent = tenant.rentHistory.find(r => r.id === rentId);
+    if (!rent) {
+      console.error(`Rent record with ID ${rentId} not found for tenant ${tenantId}`);
+      return;
+    }
+    
     // Calculate points for this rent payment
     const pointsEarned = Math.floor((rent.amount / 1000) * pointsRules.onTimeRent.basePoints);
 

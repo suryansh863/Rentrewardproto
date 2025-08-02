@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { BuildingOfficeIcon, UserIcon, LockClosedIcon, ChartBarIcon, BuildingOffice2Icon, UsersIcon } from '@heroicons/react/24/outline';
@@ -8,24 +8,44 @@ const OwnerLogin = () => {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loginAttempted, setLoginAttempted] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Check if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('Owner already authenticated, redirecting to dashboard');
+      navigate('/owner');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    setLoginAttempted(true);
+
+    if (!email || !password) {
+      setError('Email and password are required');
+      setLoading(false);
+      return;
+    }
 
     try {
+      console.log('Attempting owner login with:', { email });
       const success = await login(email, password, 'owner');
+      console.log('Login result:', success);
+      
       if (success) {
         navigate('/owner');
       } else {
-        setError('Invalid email or password');
+        setError('Invalid email or password. Please check your credentials and try again.');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      console.error('Login error:', err);
+      setError('Login failed. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -136,6 +156,12 @@ const OwnerLogin = () => {
                     </svg>
                     {error}
                   </p>
+                </div>
+              )}
+
+              {loginAttempted && !error && loading && (
+                <div className="bg-blue-100 text-blue-700 p-2 rounded">
+                  Logging in...
                 </div>
               )}
 

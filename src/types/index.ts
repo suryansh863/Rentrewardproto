@@ -11,6 +11,7 @@ export interface RentRecord {
   status: RentStatus;
   paymentMethod: string;
   chequeNumber?: string;
+  chequePhoto?: string;
   pointsEarned: number;
 }
 

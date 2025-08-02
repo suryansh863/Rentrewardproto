@@ -29,30 +29,57 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authState, setAuthState] = useState<AuthState>(() => {
     // Check if user is already logged in from localStorage
-    const savedAuth = localStorage.getItem('auth');
-    return savedAuth ? JSON.parse(savedAuth) : defaultAuthState;
+    try {
+      const savedAuth = localStorage.getItem('auth');
+      if (savedAuth) {
+        const parsedAuth = JSON.parse(savedAuth);
+        console.log('Found saved auth state:', parsedAuth);
+        return parsedAuth;
+      }
+    } catch (err) {
+      console.error('Error loading auth from localStorage:', err);
+      localStorage.removeItem('auth');
+    }
+    return defaultAuthState;
   });
 
   // Save auth state to localStorage whenever it changes
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      localStorage.setItem('auth', JSON.stringify(authState));
-    } else {
-      localStorage.removeItem('auth');
+    try {
+      if (authState.isAuthenticated) {
+        console.log('Saving auth state to localStorage:', authState);
+        localStorage.setItem('auth', JSON.stringify(authState));
+      } else {
+        localStorage.removeItem('auth');
+      }
+    } catch (err) {
+      console.error('Error saving auth to localStorage:', err);
     }
   }, [authState]);
 
   const login = async (email: string, password: string, userType: UserType): Promise<boolean> => {
     console.log('Login attempt:', { email, password, userType });
-    console.log('Available tenants:', tenants.map(t => ({ email: t.email, password: t.password })));
-    console.log('Available owners:', owners.map(o => ({ email: o.email, password: o.password })));
     
     try {
+      // Force lowercase email for consistency
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Log available users for debugging
+      if (userType === 'tenant') {
+        console.log('Available tenants:', tenants.map(t => ({ id: t.id, email: t.email, password: t.password })));
+      } else {
+        console.log('Available owners:', owners.map(o => ({ id: o.id, email: o.email, password: o.password })));
+      }
+      
       let user = null;
       
       if (userType === 'tenant') {
-        user = tenants.find(t => t.email === email && t.password === password);
+        user = tenants.find(t => 
+          t.email.toLowerCase() === normalizedEmail && 
+          t.password === password
+        );
         console.log('Found tenant:', user);
+        
         if (user) {
           const newAuthState = {
             isAuthenticated: true,
@@ -64,8 +91,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return true;
         }
       } else if (userType === 'owner') {
-        user = owners.find(o => o.email === email && o.password === password);
+        user = owners.find(o => 
+          o.email.toLowerCase() === normalizedEmail && 
+          o.password === password
+        );
         console.log('Found owner:', user);
+        
         if (user) {
           const newAuthState = {
             isAuthenticated: true,
@@ -87,7 +118,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = () => {
+    console.log('Logging out');
     setAuthState(defaultAuthState);
+    localStorage.removeItem('auth');
   };
 
   return (

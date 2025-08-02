@@ -6,7 +6,9 @@ import {
   UsersIcon, 
   ClockIcon, 
   ChartBarIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
+  PhotoIcon,
+  ArrowsPointingOutIcon
 } from '@heroicons/react/24/outline';
 import type { Tenant, RentRecord } from '../../types';
 import PaymentConfirmationModal from '../../components/common/PaymentConfirmationModal';
@@ -20,6 +22,7 @@ const OwnerDashboard = () => {
     rentRecord: RentRecord;
     propertyName: string;
   } | null>(null);
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,6 +51,12 @@ const OwnerDashboard = () => {
     if (selectedRent) {
       acknowledgeRent(selectedRent.tenant.id, selectedRent.rentRecord.id);
       setSelectedRent(null);
+    }
+  };
+
+  const handleViewChequeImage = (chequePhoto: string | undefined) => {
+    if (chequePhoto) {
+      setExpandedImage(chequePhoto);
     }
   };
 
@@ -305,6 +314,9 @@ const OwnerDashboard = () => {
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                  Cheque
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                   Action
                 </th>
               </tr>
@@ -340,8 +352,22 @@ const OwnerDashboard = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`status-${rent.status}`}>
-                          {rent.status}
+                          {rent.status === 'pending' ? 'Awaiting Confirmation' : 
+                           rent.status === 'received' ? 'Confirmed' : 
+                           rent.status === 'submitted' ? 'Submitted' :
+                           rent.status}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {rent.paymentMethod === 'cheque' && rent.chequePhoto && (
+                          <button
+                            onClick={() => handleViewChequeImage(rent.chequePhoto)}
+                            className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs"
+                          >
+                            <PhotoIcon className="w-4 h-4 mr-1" />
+                            View Cheque
+                          </button>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {rent.status === 'pending' && (
@@ -377,6 +403,43 @@ const OwnerDashboard = () => {
           rentRecord={selectedRent.rentRecord}
           propertyName={selectedRent.propertyName}
         />
+      )}
+
+      {/* Expanded Image Modal */}
+      {expandedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          onClick={() => setExpandedImage(null)}
+        >
+          <div className="relative max-w-4xl w-full">
+            <button 
+              onClick={() => setExpandedImage(null)}
+              className="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img 
+              src={expandedImage} 
+              alt="Expanded cheque" 
+              className="max-w-full max-h-[80vh] object-contain mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <div className="absolute bottom-4 left-0 right-0 text-center">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(expandedImage, '_blank');
+                }}
+                className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-white/30 transition-colors inline-flex items-center"
+              >
+                <ArrowsPointingOutIcon className="w-4 h-4 mr-2" />
+                Open in New Tab
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

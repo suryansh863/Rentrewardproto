@@ -6,6 +6,9 @@ import { useAuth } from './contexts';
 import TenantLayout from './layouts/TenantLayout';
 import OwnerLayout from './layouts/OwnerLayout';
 
+// Home Page
+import HomePage from './pages/HomePage';
+
 // Tenant Pages
 import TenantLogin from './pages/tenant/TenantLogin';
 import TenantDashboard from './pages/tenant/TenantDashboard';
@@ -50,7 +53,7 @@ const ProtectedRoute = ({
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/tenant/login" replace />
+    element: <HomePage />
   },
   
   // Tenant Routes

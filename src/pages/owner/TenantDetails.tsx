@@ -8,15 +8,20 @@ import {
   BuildingOfficeIcon, 
   CalendarIcon,
   PencilIcon,
-  TrashIcon
+  TrashIcon,
+  DocumentIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
 import type { Tenant, Property } from '../../types';
+import PaymentConfirmationModal from '../../components/common/PaymentConfirmationModal';
 
 const TenantDetails = () => {
   const { tenantId } = useParams<{ tenantId: string }>();
   const { propertyTenants, ownerProperties, loading, acknowledgeRent, deleteTenant } = useOwnerData();
   const navigate = useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedRent, setSelectedRent] = useState<{ rentId: string; tenant: Tenant } | null>(null);
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
@@ -141,6 +146,7 @@ const TenantDetails = () => {
                         <span className={`status-${rent.status}`}>
                           {rent.status === 'pending' ? 'Awaiting Confirmation' : 
                            rent.status === 'received' ? 'Confirmed' : 
+                           rent.status === 'submitted' ? 'Submitted' :
                            rent.status}
                         </span>
                         {rent.status === 'received' && (
@@ -155,10 +161,39 @@ const TenantDetails = () => {
                     </div>
                   </div>
                   
-                  {rent.status === 'pending' && (
+                  {/* Cheque Photo */}
+                  {rent.paymentMethod === 'cheque' && rent.chequePhoto && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                          <PhotoIcon className="w-4 h-4 mr-1" />
+                          Cheque Image
+                        </span>
+                        <button 
+                          onClick={() => rent.chequePhoto && setExpandedImage(rent.chequePhoto)}
+                          className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
+                        >
+                          View Full Size
+                        </button>
+                      </div>
+                      <div className="mt-2">
+                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 p-2">
+                          <img 
+                            src={rent.chequePhoto} 
+                            alt="Cheque" 
+                            className="w-full h-auto object-contain rounded shadow-sm mx-auto"
+                            style={{ maxHeight: '150px', cursor: 'pointer' }}
+                            onClick={() => rent.chequePhoto && setExpandedImage(rent.chequePhoto)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {(rent.status === 'pending' || rent.status === 'submitted') && (
                     <div className="mt-4 pt-3 border-t">
                       <button
-                        onClick={() => acknowledgeRent(tenant!.id, rent.id)}
+                        onClick={() => setSelectedRent({ rentId: rent.id, tenant })}
                         className="btn-success py-2 px-4 text-sm"
                       >
                         Mark as Received
@@ -188,6 +223,48 @@ const TenantDetails = () => {
         </div>
       </div>
       
+      {/* Payment Confirmation Modal */}
+      {selectedRent && property && (
+        <PaymentConfirmationModal
+          isOpen={!!selectedRent}
+          onClose={() => setSelectedRent(null)}
+          onConfirm={() => {
+            if (selectedRent) {
+              acknowledgeRent(selectedRent.tenant.id, selectedRent.rentId);
+              setSelectedRent(null);
+            }
+          }}
+          tenant={selectedRent.tenant}
+          rentRecord={selectedRent.tenant.rentHistory.find(r => r.id === selectedRent.rentId)!}
+          propertyName={property.name}
+        />
+      )}
+
+      {/* Expanded Image Modal */}
+      {expandedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          onClick={() => setExpandedImage(null)}
+        >
+          <div className="relative max-w-4xl w-full">
+            <button 
+              onClick={() => setExpandedImage(null)}
+              className="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img 
+              src={expandedImage} 
+              alt="Expanded cheque" 
+              className="max-w-full max-h-[80vh] object-contain mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
