@@ -4,9 +4,15 @@ import { useAuth } from '../../contexts';
 import { BuildingOffice2Icon, UserIcon, LockClosedIcon, BuildingOfficeIcon, SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';
 
 const TenantLogin = () => {
-  const [email, setEmail] = useState('john@example.com');
-  const [password, setPassword] = useState('password123');
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    general?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
   const [loginAttempted, setLoginAttempted] = useState(false);
   
@@ -21,31 +27,51 @@ const TenantLogin = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    setErrors({});
     setLoginAttempted(true);
 
-    if (!email || !password) {
-      setError('Email and password are required');
-      setLoading(false);
+    if (!validateForm()) {
       return;
     }
 
+    setLoading(true);
+
     try {
-      console.log('Attempting tenant login with:', { email });
-      const success = await login(email, password, 'tenant');
-      console.log('Login result:', success);
+      const success = await login(formData.email, formData.password, 'tenant');
       
       if (success) {
         navigate('/tenant');
       } else {
-        setError('Invalid email or password. Please check your credentials and try again.');
+        setErrors({
+          general: 'Invalid email or password. Please check your credentials and try again.'
+        });
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Login failed. Please try again later.');
+      setErrors({
+        general: 'Login failed. Please try again later.'
+      });
     } finally {
       setLoading(false);
     }
@@ -121,12 +147,17 @@ const TenantLogin = () => {
                     <input
                       type="email"
                       id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className={`w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 ${
+                        errors.email ? 'border-red-500' : 'border-white/30'
+                      }`}
                       placeholder="Enter your email"
                       required
                     />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -139,29 +170,40 @@ const TenantLogin = () => {
                     <input
                       type="password"
                       id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      className={`w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 ${
+                        errors.password ? 'border-red-500' : 'border-white/30'
+                      }`}
                       placeholder="Enter your password"
                       required
                     />
+                    {errors.password && (
+                      <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+                    )}
                   </div>
                 </div>
 
-                {error && (
-                  <div className="error-message">
-                    <p className="error-text flex items-center">
+                {errors.general && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                    <p className="text-red-400 flex items-center">
                       <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
-                      {error}
+                      {errors.general}
                     </p>
                   </div>
                 )}
 
-                {loginAttempted && !error && loading && (
-                  <div className="bg-blue-100 text-blue-700 p-2 rounded">
-                    Logging in...
+                {loading && (
+                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-4">
+                    <p className="text-indigo-400 flex items-center">
+                      <svg className="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Authenticating...
+                    </p>
                   </div>
                 )}
 

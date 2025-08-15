@@ -5,61 +5,82 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       {/* Navigation */}
-      <header className="fixed w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg z-50 py-4 px-6 shadow-sm">
+      <header className="fixed w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg z-50 py-4 px-6 shadow-sm" role="banner">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-8 h-8 rounded-lg"></div>
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-8 h-8 rounded-lg" role="img" aria-label="RentReward logo"></div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
               RentReward
             </span>
           </div>
           
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8" role="navigation" aria-label="Main navigation">
             <a href="#features" className="text-gray-600 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors">Features</a>
             <a href="#how-it-works" className="text-gray-600 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors">How It Works</a>
             <a href="#benefits" className="text-gray-600 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors">Benefits</a>
           </nav>
           
-          <div className="flex items-center space-x-4">
-            <Link to="/tenant/login" className="px-4 py-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
-              Tenant Login
+          <div className="flex items-center space-x-4" role="navigation" aria-label="User authentication">
+            <Link 
+              to="/login" 
+              className="px-4 py-2 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+              aria-label="Login"
+            >
+              Login
             </Link>
-            <Link to="/owner/login" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all">
-              Owner Login
+            <Link 
+              to="/signup" 
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
+              aria-label="Sign up"
+            >
+              Sign Up
             </Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6" role="region" aria-labelledby="hero-heading">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 id="hero-heading" className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Rewarding <span className="text-indigo-600 dark:text-indigo-400">On-time Rent</span> Payments
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300">
                 RentReward helps property owners incentivize timely rent payments while tenants earn rewards for their punctuality.
               </p>
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Link to="/tenant/login" className="btn-primary flex items-center justify-center">
-                  Get Started as Tenant
-                  <ArrowRightIcon className="w-5 h-5 ml-2" />
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4" role="group" aria-label="Get started options">
+                <Link 
+                  to="/signup" 
+                  className="btn-primary flex items-center justify-center"
+                  role="button"
+                  aria-label="Get started"
+                >
+                  Get Started
+                  <ArrowRightIcon className="w-5 h-5 ml-2" aria-hidden="true" />
                 </Link>
-                <Link to="/owner/login" className="btn-secondary flex items-center justify-center">
-                  Property Owner Portal
-                  <ArrowRightIcon className="w-5 h-5 ml-2" />
+                <Link 
+                  to="/login" 
+                  className="btn-secondary flex items-center justify-center"
+                  role="button"
+                  aria-label="Already have an account? Login"
+                >
+                  Login
+                  <ArrowRightIcon className="w-5 h-5 ml-2" aria-hidden="true" />
                 </Link>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-100 dark:bg-indigo-900/20 rounded-full filter blur-3xl opacity-70"></div>
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-100 dark:bg-purple-900/20 rounded-full filter blur-3xl opacity-70"></div>
+            <div className="relative" role="img" aria-label="Modern apartment building illustration">
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-100 dark:bg-indigo-900/20 rounded-full filter blur-3xl opacity-70" aria-hidden="true"></div>
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-100 dark:bg-purple-900/20 rounded-full filter blur-3xl opacity-70" aria-hidden="true"></div>
               <img 
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop" 
-                alt="Modern apartment building" 
+                alt="Modern apartment building with glass facade and balconies" 
                 className="rounded-2xl shadow-2xl w-full object-cover h-[500px] relative z-10"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
               />
             </div>
           </div>
@@ -67,10 +88,15 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 bg-white dark:bg-gray-800">
+      <section 
+        id="features" 
+        className="py-20 px-6 bg-white dark:bg-gray-800"
+        role="region" 
+        aria-labelledby="features-heading"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Platform Features</h2>
+            <h2 id="features-heading" className="text-3xl md:text-4xl font-bold mb-4">Platform Features</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Our comprehensive platform offers tools for both property owners and tenants to streamline the rent payment process.
             </p>
@@ -164,8 +190,10 @@ const HomePage = () => {
             <div>
               <img 
                 src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?q=80&w=800&auto=format&fit=crop" 
-                alt="Person using laptop" 
+                alt="Person managing property details on laptop" 
                 className="rounded-xl shadow-xl w-full"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             
@@ -318,11 +346,11 @@ const HomePage = () => {
             Join thousands of property owners and tenants already using RentReward.
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Link to="/tenant/login" className="px-8 py-4 bg-white text-indigo-600 hover:bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-all font-bold">
-              Join as Tenant
+            <Link to="/signup" className="px-8 py-4 bg-white text-indigo-600 hover:bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-all font-bold">
+              Sign Up Now
             </Link>
-            <Link to="/owner/login" className="px-8 py-4 bg-indigo-800 hover:bg-indigo-900 text-white rounded-lg shadow-lg hover:shadow-xl transition-all font-bold">
-              Join as Property Owner
+            <Link to="/login" className="px-8 py-4 bg-indigo-800 hover:bg-indigo-900 text-white rounded-lg shadow-lg hover:shadow-xl transition-all font-bold">
+              Login
             </Link>
           </div>
         </div>
@@ -354,8 +382,8 @@ const HomePage = () => {
             <div>
               <h4 className="text-lg font-semibold mb-4">Login</h4>
               <ul className="space-y-2">
-                <li><Link to="/tenant/login" className="text-gray-400 hover:text-white transition-colors">Tenant Portal</Link></li>
-                <li><Link to="/owner/login" className="text-gray-400 hover:text-white transition-colors">Owner Portal</Link></li>
+                <li><Link to="/login" className="text-gray-400 hover:text-white transition-colors">Login</Link></li>
+                <li><Link to="/signup" className="text-gray-400 hover:text-white transition-colors">Sign Up</Link></li>
               </ul>
             </div>
           </div>

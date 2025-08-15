@@ -1,6 +1,4 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import type { ReactNode } from 'react';
-import { useAuth } from './contexts';
 
 // Layouts
 import TenantLayout from './layouts/TenantLayout';
@@ -10,7 +8,6 @@ import OwnerLayout from './layouts/OwnerLayout';
 import HomePage from './pages/HomePage';
 
 // Tenant Pages
-import TenantLogin from './pages/tenant/TenantLogin';
 import TenantDashboard from './pages/tenant/TenantDashboard';
 import SubmitRent from './pages/tenant/SubmitRent';
 import TenantRewards from './pages/tenant/TenantRewards';
@@ -18,7 +15,6 @@ import TenantReferrals from './pages/tenant/TenantReferrals';
 import TenantProfile from './pages/tenant/TenantProfile';
 
 // Owner Pages
-import OwnerLogin from './pages/owner/OwnerLogin';
 import OwnerDashboard from './pages/owner/OwnerDashboard';
 import PropertyDetails from './pages/owner/PropertyDetails';
 import TenantDetails from './pages/owner/TenantDetails';
@@ -28,26 +24,10 @@ import AddTenant from './pages/owner/AddTenant';
 import EditProperty from './pages/owner/EditProperty';
 import EditTenant from './pages/owner/EditTenant';
 
-// Protected Route Component
-const ProtectedRoute = ({ 
-  children, 
-  requiredUserType 
-}: { 
-  children: ReactNode; 
-  requiredUserType: 'tenant' | 'owner' 
-}) => {
-  const { isAuthenticated, userType } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to={`/${requiredUserType}/login`} replace />;
-  }
-
-  if (userType !== requiredUserType) {
-    return <Navigate to={`/${userType}`} replace />;
-  }
-
-  return <>{children}</>;
-};
+// Auth Pages
+import { LoginPage } from './pages/auth/LoginPage';
+import { SignupPage } from './pages/auth/SignupPage';
+import { VerifyEmailSentPage } from './pages/auth/VerifyEmailSentPage';
 
 // Routes Configuration
 export const router = createBrowserRouter([
@@ -55,15 +35,24 @@ export const router = createBrowserRouter([
     path: '/',
     element: <HomePage />
   },
+  // Auth Routes
+  {
+    path: '/login',
+    element: <LoginPage />
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />
+  },
+  {
+    path: '/verify-email-sent',
+    element: <VerifyEmailSentPage />
+  },
   
   // Tenant Routes
   {
     path: '/tenant',
-    element: (
-      <ProtectedRoute requiredUserType="tenant">
-        <TenantLayout />
-      </ProtectedRoute>
-    ),
+    element: <TenantLayout />,
     children: [
       {
         index: true,
@@ -87,19 +76,11 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: '/tenant/login',
-    element: <TenantLogin />
-  },
   
   // Owner Routes
   {
     path: '/owner',
-    element: (
-      <ProtectedRoute requiredUserType="owner">
-        <OwnerLayout />
-      </ProtectedRoute>
-    ),
+    element: <OwnerLayout />,
     children: [
       {
         index: true,
@@ -135,14 +116,10 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: '/owner/login',
-    element: <OwnerLogin />
-  },
   
   // Catch-all route
   {
     path: '*',
     element: <Navigate to="/" replace />
   }
-]); 
+]);

@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom';
-import { CreditCardIcon, GiftIcon, UserGroupIcon, SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';
+import { 
+  CreditCardIcon, 
+  GiftIcon, 
+  UserGroupIcon, 
+  SparklesIcon, 
+  TrophyIcon,
+  ArrowRightIcon,
+  CheckCircleIcon
+} from '@heroicons/react/24/outline';
 import { useTenantData } from '../../contexts';
 
 const TenantDashboard = () => {
@@ -7,8 +15,35 @@ const TenantDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="space-y-6 p-4">
+        {/* Loading skeleton for welcome header */}
+        <div className="card-gradient hero-pattern animate-pulse">
+          <div className="h-24 flex items-center">
+            <div className="space-y-3">
+              <div className="h-6 w-48 bg-gray-300 dark:bg-gray-600 rounded"></div>
+              <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading skeleton for rent status */}
+        <div className="card-gradient animate-pulse">
+          <div className="h-8 w-32 bg-gray-300 dark:bg-gray-600 rounded mb-4"></div>
+          <div className="space-y-4">
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-16 bg-gray-100 dark:bg-gray-800 rounded"></div>
+          </div>
+        </div>
+
+        {/* Loading skeleton for reward points */}
+        <div className="card-primary stat-card animate-pulse">
+          <div className="h-32 flex items-center">
+            <div className="space-y-3">
+              <div className="h-6 w-40 bg-white/20 rounded"></div>
+              <div className="h-10 w-24 bg-white/30 rounded"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -67,45 +102,77 @@ const TenantDashboard = () => {
         </div>
 
         {latestRent ? (
-          <div className="card-content-bg rounded-lg p-4 mb-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm text-secondary">Last Payment</span>
-                <div className="text-xl font-bold text-primary">AED {latestRent.amount.toLocaleString()}</div>
+          <div className="card-content-bg rounded-lg p-6 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <div>
+                  <span className="text-sm text-secondary">Last Payment</span>
+                  <div className="flex items-baseline mt-1">
+                    <span className="text-2xl font-bold text-primary">AED {latestRent.amount.toLocaleString()}</span>
+                    <span className="ml-2 text-sm text-secondary">for {latestRent.month}</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <span className="text-sm text-secondary">Payment Status</span>
+                  <div className="mt-2">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      latestRent.status === 'received' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                      latestRent.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                    }`}>
+                      {latestRent.status === 'pending' && <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>}
+                      {latestRent.status === 'received' && <CheckCircleIcon className="w-4 h-4 mr-2" />}
+                      {latestRent.status === 'pending' ? 'Awaiting Confirmation' : 
+                       latestRent.status === 'received' ? 'Payment Confirmed' : 
+                       latestRent.status}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <span className="text-sm text-secondary">Month</span>
-                <div className="font-semibold text-primary">{latestRent.month}</div>
+
+              <div className="border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 pt-6 md:pt-0 md:pl-6">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-sm text-secondary">Submission Date</span>
+                    <div className="mt-1 font-medium text-primary">
+                      {new Date(latestRent.submissionDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <span className="text-sm text-secondary">Points Earned</span>
+                    <div className="mt-1 flex items-center">
+                      <SparklesIcon className="w-5 h-5 text-yellow-400 mr-2" />
+                      <span className="font-medium text-primary">+{latestRent.pointsEarned} points</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-3 flex justify-between items-center">
-              <span className="text-sm text-secondary">Status</span>
-              <div className="flex items-center space-x-2">
-                <span className={`status-${latestRent.status}`}>
-                  {latestRent.status === 'pending' ? 'Awaiting Confirmation' : 
-                   latestRent.status === 'received' ? 'Confirmed' : 
-                   latestRent.status}
-                </span>
-                {latestRent.status === 'pending' && (
-                  <span className="text-xs text-yellow-600 dark:text-yellow-400">⏳</span>
-                )}
-                {latestRent.status === 'received' && (
-                  <span className="text-xs text-green-600 dark:text-green-400">✓</span>
-                )}
-              </div>
-            </div>
+
             {latestRent.status === 'pending' && (
-              <div className="mt-3 p-3 info-box rounded-lg">
-                <p className="text-xs info-box-text flex items-center">
-                  <span className="mr-2">ℹ️</span>
+              <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/30 rounded-lg">
+                <p className="text-sm text-yellow-800 dark:text-yellow-300 flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
                   Your payment is being reviewed by the property owner. You'll receive confirmation soon.
                 </p>
               </div>
             )}
           </div>
         ) : (
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-center text-secondary mb-4">
-            No rent history found
+          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6 text-center">
+            <div className="flex flex-col items-center">
+              <CreditCardIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" />
+              <p className="text-gray-600 dark:text-gray-300 mb-2">No rent history found</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Submit your first rent payment to start earning rewards</p>
+            </div>
           </div>
         )}
 
@@ -118,25 +185,66 @@ const TenantDashboard = () => {
       </div>
 
       {/* Reward Points - Enhanced */}
-      <div className="card-primary stat-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold mb-2 flex items-center">
-              <SparklesIcon className="w-5 h-5 mr-2" />
-              Your Reward Points
-            </h3>
-            <p className="text-4xl font-bold mb-4">{tenant.rewardPoints.toLocaleString()}</p>
-            <Link 
-              to="/tenant/rewards" 
-              className="inline-flex items-center text-white/90 hover:text-white font-medium transition-colors"
-            >
-              Redeem Rewards <GiftIcon className="ml-2 w-4 h-4" />
-            </Link>
-          </div>
-          <div className="hidden sm:block">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-              <GiftIcon className="w-10 h-10 text-white" />
+      <div className="card-primary stat-card relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full translate-y-24 -translate-x-24"></div>
+        
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2 flex items-center">
+                  <SparklesIcon className="w-5 h-5 mr-2" />
+                  Your Reward Points
+                </h3>
+                <div className="flex items-baseline">
+                  <p className="text-5xl font-bold">{tenant.rewardPoints.toLocaleString()}</p>
+                  <span className="ml-2 text-white/70">points</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to="/tenant/rewards" 
+                  className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
+                >
+                  Redeem Rewards
+                  <GiftIcon className="ml-2 w-4 h-4" />
+                </Link>
+                
+                <Link
+                  to="/tenant/referrals"
+                  className="inline-flex items-center text-white/80 hover:text-white font-medium transition-colors"
+                >
+                  Earn More
+                  <ArrowRightIcon className="ml-1 w-4 h-4" />
+                </Link>
+              </div>
             </div>
+            
+            <div className="hidden sm:flex flex-col items-center space-y-2">
+              <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <TrophyIcon className="w-12 h-12 text-yellow-300" />
+              </div>
+              <span className="text-sm text-white/70">Gold Tier</span>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="mt-8">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-white/70">Progress to Platinum</span>
+              <span className="text-white/90">75%</span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full"
+                style={{ width: '75%' }}
+              ></div>
+            </div>
+            <p className="mt-2 text-sm text-white/70">
+              Earn 2,500 more points to reach Platinum tier
+            </p>
           </div>
         </div>
       </div>
